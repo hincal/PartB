@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewBag.Title = "Glossary";
+}
+
+<h2>Index</h2>
+
+<div class="container">
+    <div class="row">
+
+        @(Html.Kendo().Grid<Part_B.Models.Glossary>()
+    .Name("GlossaryGrid")
+    .Columns(columns =>
+    {
+        //  columns.Bound(g => g.Id);  
+        columns.Bound(c => c.Term);
+        columns.Bound(c => c.Definition);
+        columns.Command(command =>
+        {
+            command.Edit();
+            command.Destroy();
+        }).Width(200);
+
+    })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(events => events.Error("error_handler"))
+        .Model(model=>
+        {
+            model.Id(glossary => glossary.Id);
+            model.Field(glossary => glossary.Id).Editable(false);
+        }
+        )
+        .Create(create => create.Action("Create", "Glossary"))
+        .Read(read => read.Action("Read", "Glossary"))
+        .Update(update => update.Action("Update", "Glossary"))
+        .Destroy(delete => delete.Action("Delete", "Glossary"))
+        )
+        .ToolBar(toolbar => toolbar.Create())
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Sortable()
+        .Pageable(pageable =>
+        {
+            pageable.Refresh(true);
+            pageable.PageSizes(true);
+        })
+        )
+
+        <script type="text/javascript">
+            function error_handler(e) {
+                if (e.errors) {
+                    var message = "Errors:\n";
+                    $.each(e.errors, function (key, value) {
+                        if ('errors' in value) {
+                            $.each(value.errors, function () {
+                                message += this + "\n";
+                            });
+                        }
+                    });
+                    alert(message);
+                }
+            }
+        </script>
+    </div>
+</div>
